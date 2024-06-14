@@ -1,18 +1,14 @@
 import { Controller, useForm } from "react-hook-form";
 import {
     TextField,
-    Button,
-    FormControl,
     InputLabel,
     Select,
     MenuItem,
-    Checkbox,
     FormControlLabel,
     Box,
     Autocomplete,
     RadioGroup,
     Radio,
-    Input,
 } from "@mui/material";
 import {
     DatePicker,
@@ -21,18 +17,7 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import { forwardRef, useImperativeHandle, useState } from "react";
-
-interface IDuration {
-    label: string;
-    value: number;
-}
-
-// type FormValues = {
-//     dateTime: Dayjs | null;
-//     duration: { label: string; value: number } | null;
-//     eventName: string;
-// };
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 
 type status = "upcoming" | "completed" | "ongoing";
 interface IFormValues {
@@ -58,33 +43,27 @@ const durationOptions = [
 
 interface IEventFormProps {
     onSubmit: (data: IFormValues) => void;
+    setReset: (reset: () => void) => void;
 }
-const EventForm = forwardRef((props: IEventFormProps, ref) => {
-    const { register, handleSubmit, control, setValue } = useForm<IFormValues>({
+
+export interface IEventFormRef {
+    submit: () => void;
+}
+const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
+    const { register, handleSubmit, control, reset } = useForm<IFormValues>({
         defaultValues: {
             datetime: dayjs(),
             duration: durationOptions[0],
         },
     });
 
-    const [uploadFile, setUploadFile] = useState<File[] | File>([]);
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // setUploadFile(e.target.files)
-        console.log(e.target.files);
-    };
-
     useImperativeHandle(ref, () => ({
         submit: () => handleSubmit(props.onSubmit)(),
     }));
-    // const onSubmit = (data: any) => {
-    //     const date = data.datetime.valueOf();
-    //     // const time = data.time.valueOf();
-    //     console.log(data);
-    //     console.log(date, "     ");
 
-    //     // setValue("eventName", "");
-    // };
-
+    useEffect(() => {
+        props.setReset(() => reset);
+    }, [reset]);
     return (
         <form>
             <Box sx={{ mb: "1rem", pb: "1rem" }}>
@@ -135,7 +114,7 @@ const EventForm = forwardRef((props: IEventFormProps, ref) => {
                     margin="normal"
                     placeholder="Add your agenda here..."
                     multiline
-                    rows={6}
+                    rows={3}
                     sx={{
                         fontSize: "small",
                         // padding: "1rem",
@@ -380,6 +359,7 @@ const EventForm = forwardRef((props: IEventFormProps, ref) => {
                 <Controller
                     name="guests"
                     control={control}
+                    rules={{ required: "Guests is required" }}
                     render={({ field }) => (
                         <TextField
                             {...field}
@@ -427,6 +407,7 @@ const EventForm = forwardRef((props: IEventFormProps, ref) => {
                     <Controller
                         name="notification"
                         control={control}
+                        rules={{ required: "Notification is required" }}
                         defaultValue="email" // Default value can be "email" or "slack"
                         render={({ field }) => (
                             <RadioGroup {...field} row>
@@ -474,6 +455,7 @@ const EventForm = forwardRef((props: IEventFormProps, ref) => {
                         name="reminder"
                         control={control}
                         defaultValue={30}
+                        rules={{ required: "Reminder is required" }}
                         render={({ field }) => (
                             <Select
                                 {...field}
@@ -568,6 +550,7 @@ const EventForm = forwardRef((props: IEventFormProps, ref) => {
                 <Controller
                     name="attachment"
                     control={control}
+                    rules={{ required: "Attachment is required" }}
                     render={({ field }) => (
                         <Box sx={{ border: "" }}>
                             <input
