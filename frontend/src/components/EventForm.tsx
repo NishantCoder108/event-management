@@ -16,39 +16,23 @@ import {
     TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { forwardRef, useEffect, useImperativeHandle } from "react";
+import {
+    IEventFormProps,
+    IEventFormRef,
+    IFormValues,
+} from "../interfaces/IEventForm";
 
-type status = "upcoming" | "completed" | "ongoing";
-interface IFormValues {
-    datetime: Dayjs;
-    duration: { label: string; value: number };
-    eventName: string;
-    location: string;
-    agenda?: string;
-    guests: string[] | string;
-    status: status;
-    reminder: number;
-    notification: string;
-    attachment?: File | string | string[];
-}
 const durationOptions = [
-    { label: "30min", value: 1800 },
-    { label: "1h", value: 3600 },
-    { label: "1h 30m", value: 5400 },
-    { label: "2h", value: 7200 },
-    { label: "3h", value: 10800 },
-    { label: "4h", value: 14400 },
+    { label: "30min", value: 1800 * 60000 },
+    { label: "1h", value: 3600 * 60000 },
+    { label: "1h 30m", value: 5400 * 60000 },
+    { label: "2h", value: 7200 * 60000 },
+    { label: "3h", value: 10800 * 60000 },
+    { label: "4h", value: 14400 * 60000 },
 ];
 
-interface IEventFormProps {
-    onSubmit: (data: IFormValues) => void;
-    setReset: (reset: () => void) => void;
-}
-
-export interface IEventFormRef {
-    submit: () => void;
-}
 const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
     const { register, handleSubmit, control, reset } = useForm<IFormValues>({
         defaultValues: {
@@ -494,7 +478,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     None
                                 </MenuItem>
                                 <MenuItem
-                                    value={5}
+                                    value={300000}
                                     sx={{
                                         fontSize: "small",
                                     }}
@@ -502,7 +486,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     5 minutes before
                                 </MenuItem>
                                 <MenuItem
-                                    value={15}
+                                    value={900000}
                                     sx={{
                                         fontSize: "small",
                                     }}
@@ -510,7 +494,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     15 minutes before
                                 </MenuItem>
                                 <MenuItem
-                                    value={30}
+                                    value={1800000}
                                     sx={{
                                         fontSize: "small",
                                     }}
@@ -518,7 +502,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     30 minutes before
                                 </MenuItem>
                                 <MenuItem
-                                    value={60}
+                                    value={3600000}
                                     sx={{
                                         fontSize: "small",
                                     }}
@@ -526,7 +510,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     1 hour before
                                 </MenuItem>
                                 <MenuItem
-                                    value={1440}
+                                    value={86400000}
                                     sx={{
                                         fontSize: "small",
                                     }}
