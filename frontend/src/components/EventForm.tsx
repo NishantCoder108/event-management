@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import {
     TextField,
     Button,
@@ -17,27 +17,50 @@ import {
     TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
 
 interface IDuration {
     label: string;
     value: number;
 }
 
+// type FormValues = {
+//     dateTime: Dayjs | null;
+//     duration: { label: string; value: number } | null;
+//     eventName: string;
+// };
+
+interface IFormValues {
+    datetime: Dayjs;
+    duration: { label: string; value: number };
+    eventName: string;
+    location: string;
+    agenda?: string;
+}
+const durationOptions = [
+    { label: "30min", value: 1800 },
+    { label: "1h", value: 3600 },
+    { label: "1h 30m", value: 5400 },
+    { label: "2h", value: 7200 },
+    { label: "3h", value: 10800 },
+    { label: "4h", value: 14400 },
+];
+
 function EventForm() {
-    const { register, handleSubmit } = useForm();
-    const durationOptions = [
-        { label: "30min", value: 1800 },
-        { label: "1h", value: 3600 },
-        { label: "1h 30m", value: 5400 },
-        { label: "2h", value: 7200 },
-        { label: "3h", value: 10800 },
-        { label: "4h", value: 14400 },
-    ];
+    const { register, handleSubmit, control, setValue } = useForm<IFormValues>({
+        defaultValues: {
+            datetime: dayjs(),
+            duration: durationOptions[0],
+        },
+    });
 
     const onSubmit = (data: any) => {
+        const date = data.datetime.valueOf();
+        // const time = data.time.valueOf();
         console.log(data);
-        // Handle form submission here
+        console.log(date, "     ");
+
+        // setValue("eventName", "");
     };
 
     return (
@@ -75,86 +98,138 @@ function EventForm() {
                     size="small"
                 />
             </Box>
+            <Box sx={{ mb: ".5rem", pb: "1rem" }}>
+                <InputLabel
+                    htmlFor="agenda"
+                    sx={{ fontSize: "small", fontWeight: "bold" }}
+                >
+                    Agenda
+                </InputLabel>
+
+                <TextField
+                    {...register("agenda")}
+                    id="agenda"
+                    fullWidth
+                    margin="normal"
+                    placeholder="Add your agenda here..."
+                    multiline
+                    rows={6}
+                    sx={{
+                        fontSize: "small",
+                        // padding: "1rem",
+                        "& .MuiInputBase-root": {
+                            fontSize: "small",
+                            margin: "-1rem 0",
+                            // padding: ".1rem 0",
+                        },
+
+                        "& .MuiInputLabel-root": {
+                            // Target the root element of the label component
+                            fontWeight: "bold",
+                        },
+                    }}
+                    hiddenLabel
+                    size="small"
+                />
+            </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Box sx={{ mb: "1rem" }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <InputLabel
-                            htmlFor="date"
-                            sx={{ fontSize: "small", fontWeight: "bold" }}
-                        >
-                            Date
-                        </InputLabel>
-                        <Box>
-                            <DatePicker
-                                {...register("date1")}
-                                // value={selectedDate}
-                                onChange={(newValue) => {
-                                    console.log(newValue);
-                                }}
-                                format="MMMM D, YYYY"
-                                sx={{
-                                    fontSize: "small",
-                                    "& .MuiInputBase-root": {
-                                        // Target the root element of the input component
+                    <InputLabel
+                        htmlFor="Date"
+                        sx={{ fontSize: "small", fontWeight: "bold" }}
+                    >
+                        Date
+                    </InputLabel>
+                    <Controller
+                        name="datetime"
+                        control={control}
+                        render={({ field }) => (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker
+                                    {...field}
+                                    onChange={(date) => {
+                                        if (date && field.value) {
+                                            const updatedDateTime = field.value
+                                                .set("year", date.year())
+                                                .set("month", date.month())
+                                                .set("date", date.date());
+                                            field.onChange(updatedDateTime);
+                                        } else {
+                                            field.onChange(date);
+                                        }
+                                    }}
+                                    value={field.value}
+                                    format="MMMM D, YYYY"
+                                    sx={{
                                         fontSize: "small",
+                                        "& .MuiInputBase-root": {
+                                            fontSize: "small",
 
-                                        padding: "0 1rem 0",
-                                    },
-                                    "& .MuiInputLabel-root": {
-                                        // Target the root element of the label component
-                                        fontWeight: "bold",
-                                    },
-                                    "& .MuiInputBase-input": {
-                                        // Target the root element of the label component
-                                        padding: ".7rem .7rem .7rem 0",
-                                    },
-                                }}
-                                // hiddenLabel
-                                // size="small"
-                            />{" "}
-                        </Box>
-                    </LocalizationProvider>
+                                            padding: "0 1rem 0",
+                                        },
+                                        "& .MuiInputLabel-root": {
+                                            fontWeight: "bold",
+                                        },
+                                        "& .MuiInputBase-input": {
+                                            padding: ".7rem .7rem .7rem 0",
+                                        },
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        )}
+                    />
                 </Box>
                 <Box sx={{ mb: "1rem" }}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <InputLabel
-                            htmlFor="time"
-                            sx={{ fontSize: "small", fontWeight: "bold" }}
-                        >
-                            Time
-                        </InputLabel>
-                        <Box>
-                            <TimePicker
-                                {...register("time1")}
-                                // value={selectedDate}
-                                onChange={(newValue) => {
-                                    console.log(newValue);
-                                }}
-                                // format="MMMM D, YYYY"
-                                sx={{
-                                    fontSize: "small",
-                                    "& .MuiInputBase-root": {
-                                        // Target the root element of the input component
+                    <InputLabel
+                        htmlFor="time"
+                        sx={{ fontSize: "small", fontWeight: "bold" }}
+                    >
+                        Time
+                    </InputLabel>
+                    <Controller
+                        name="datetime"
+                        control={control}
+                        render={({ field }) => (
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <TimePicker
+                                    {...field}
+                                    onChange={(time) => {
+                                        if (time && field.value) {
+                                            const updatedDateTime = field.value
+                                                .set("hour", time.hour())
+                                                .set("minute", time.minute())
+                                                .set("second", time.second());
+                                            field.onChange(updatedDateTime);
+                                        } else {
+                                            field.onChange(time);
+                                        }
+                                    }}
+                                    views={["hours", "minutes"]}
+                                    value={field.value}
+                                    ampmInClock={false}
+                                    // disableOpenPicker
+                                    orientation="portrait"
+                                    sx={{
                                         fontSize: "small",
+                                        "& .MuiInputBase-root": {
+                                            fontSize: "small",
 
-                                        padding: "0 1rem 0",
-                                    },
-                                    "& .MuiInputLabel-root": {
-                                        // Target the root element of the label component
-                                        fontWeight: "bold",
-                                    },
-                                    "& .MuiInputBase-input": {
-                                        // Target the root element of the label component
-                                        padding: ".7rem .7rem .7rem 0",
-                                    },
-                                }}
-                                // hiddenLabel
-                                // size="small"
-                            />{" "}
-                        </Box>
-                    </LocalizationProvider>
+                                            padding: "0 1rem 0",
+                                        },
+                                        "& .MuiInputLabel-root": {
+                                            fontWeight: "bold",
+                                        },
+                                        "& .MuiInputBase-input": {
+                                            padding: ".7rem .7rem .7rem 0",
+                                        },
+                                    }}
+                                />
+                            </LocalizationProvider>
+                        )}
+                    />
                 </Box>
+
                 <Box sx={{ mb: "1rem" }}>
                     <InputLabel
                         htmlFor="duration"
@@ -163,7 +238,57 @@ function EventForm() {
                         Duration
                     </InputLabel>
                     <Box>
-                        <Autocomplete
+                        <Controller
+                            name="duration"
+                            control={control}
+                            render={({ field }) => (
+                                <Autocomplete
+                                    options={durationOptions}
+                                    getOptionLabel={(option) => option.label}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            sx={{
+                                                minWidth: 150,
+                                                maxWidth: 400,
+                                                fontSize: "small",
+                                            }}
+                                            {...params}
+                                            // label="Select Duration"
+                                            size="small"
+                                        />
+                                    )}
+                                    id="duration"
+                                    defaultValue={durationOptions[0]}
+                                    onChange={(event, value) =>
+                                        field.onChange(value)
+                                    }
+                                    value={field.value}
+                                    sx={{
+                                        fontSize: "small",
+                                        "& .MuiInputBase-root": {
+                                            // Target the root element of the input component
+                                            fontSize: "small",
+
+                                            // padding: "0 1rem 0",
+                                        },
+                                        "& .MuiInputLabel-root": {
+                                            fontWeight: "bold",
+                                        },
+                                        "& .MuiInputBase-input": {
+                                            padding: ".3rem 0 !important",
+                                        },
+                                        "& .MuiAutocomplete-popper": {
+                                            border: "5px solid red !important",
+                                        },
+                                        "& .base-Popper-root": {
+                                            border: "1px solid red",
+                                            backgroundColor: "red",
+                                        },
+                                    }}
+                                />
+                            )}
+                        />
+                        {/* <Autocomplete
                             {...register("duration")}
                             options={durationOptions}
                             defaultValue={durationOptions[0]}
@@ -181,31 +306,10 @@ function EventForm() {
                                     size="small"
                                 />
                             )}
-                            sx={{
-                                fontSize: "small",
-                                "& .MuiInputBase-root": {
-                                    // Target the root element of the input component
-                                    fontSize: "small",
-
-                                    // padding: "0 1rem 0",
-                                },
-                                "& .MuiInputLabel-root": {
-                                    fontWeight: "bold",
-                                },
-                                "& .MuiInputBase-input": {
-                                    padding: ".4rem 0 !important",
-                                },
-                                "& .MuiAutocomplete-popper": {
-                                    border: "5px solid red !important",
-                                },
-                                "& .base-Popper-root": {
-                                    border: "1px solid red",
-                                    backgroundColor: "red",
-                                },
-                            }}
+                           
                             // hiddenLabel
                             size="small"
-                        />{" "}
+                        />{" "} */}
                     </Box>
                     <TextField
                         {...register("location")}
