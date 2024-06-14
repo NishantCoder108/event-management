@@ -8,7 +8,7 @@ export interface IFormValues {
     eventName: string;
     location: string;
     agenda?: string;
-    guests: string[] | string;
+    guests: string;
     status: status;
     reminder: number;
     notification: string;
