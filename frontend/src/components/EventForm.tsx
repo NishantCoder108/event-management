@@ -10,6 +10,9 @@ import {
     FormControlLabel,
     Box,
     Autocomplete,
+    RadioGroup,
+    Radio,
+    Input,
 } from "@mui/material";
 import {
     DatePicker,
@@ -18,6 +21,7 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 interface IDuration {
     label: string;
@@ -30,12 +34,18 @@ interface IDuration {
 //     eventName: string;
 // };
 
+type status = "upcoming" | "completed" | "ongoing";
 interface IFormValues {
     datetime: Dayjs;
     duration: { label: string; value: number };
     eventName: string;
     location: string;
     agenda?: string;
+    guests: string[] | string;
+    status: status;
+    reminder: number;
+    notification: string;
+    attachment?: File | string | string[];
 }
 const durationOptions = [
     { label: "30min", value: 1800 },
@@ -46,7 +56,10 @@ const durationOptions = [
     { label: "4h", value: 14400 },
 ];
 
-function EventForm() {
+interface IEventFormProps {
+    onSubmit: (data: IFormValues) => void;
+}
+const EventForm = forwardRef((props: IEventFormProps, ref) => {
     const { register, handleSubmit, control, setValue } = useForm<IFormValues>({
         defaultValues: {
             datetime: dayjs(),
@@ -54,18 +67,27 @@ function EventForm() {
         },
     });
 
-    const onSubmit = (data: any) => {
-        const date = data.datetime.valueOf();
-        // const time = data.time.valueOf();
-        console.log(data);
-        console.log(date, "     ");
-
-        // setValue("eventName", "");
+    const [uploadFile, setUploadFile] = useState<File[] | File>([]);
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // setUploadFile(e.target.files)
+        console.log(e.target.files);
     };
 
+    useImperativeHandle(ref, () => ({
+        submit: () => handleSubmit(props.onSubmit)(),
+    }));
+    // const onSubmit = (data: any) => {
+    //     const date = data.datetime.valueOf();
+    //     // const time = data.time.valueOf();
+    //     console.log(data);
+    //     console.log(date, "     ");
+
+    //     // setValue("eventName", "");
+    // };
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={{ mb: ".5rem", pb: "1rem" }}>
+        <form>
+            <Box sx={{ mb: "1rem", pb: "1rem" }}>
                 <InputLabel
                     htmlFor="eventName"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
@@ -98,7 +120,7 @@ function EventForm() {
                     size="small"
                 />
             </Box>
-            <Box sx={{ mb: ".5rem", pb: "1rem" }}>
+            <Box sx={{ mb: "1rem", pb: "1rem" }}>
                 <InputLabel
                     htmlFor="agenda"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
@@ -133,7 +155,14 @@ function EventForm() {
                 />
             </Box>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+                sx={{
+                    display: "flex",
+                    mb: ".5rem",
+                    justifyContent: "space-between",
+                    gap: "1rem",
+                }}
+            >
                 <Box sx={{ mb: "1rem" }}>
                     <InputLabel
                         htmlFor="Date"
@@ -173,6 +202,10 @@ function EventForm() {
                                         },
                                         "& .MuiInputBase-input": {
                                             padding: ".7rem .7rem .7rem 0",
+                                        },
+                                        "& .MuiSvgIcon-root ": {
+                                            width: "1rem",
+                                            height: "1rem",
                                         },
                                     }}
                                 />
@@ -222,6 +255,10 @@ function EventForm() {
                                         },
                                         "& .MuiInputBase-input": {
                                             padding: ".7rem .7rem .7rem 0",
+                                        },
+                                        "& .MuiSvgIcon-root ": {
+                                            width: "1rem",
+                                            height: "1rem",
                                         },
                                     }}
                                 />
@@ -284,83 +321,272 @@ function EventForm() {
                                             border: "1px solid red",
                                             backgroundColor: "red",
                                         },
+                                        "& .MuiAutocomplete-option": {
+                                            fontSize: "small",
+                                        },
                                     }}
                                 />
                             )}
                         />
-                        {/* <Autocomplete
-                            {...register("duration")}
-                            options={durationOptions}
-                            defaultValue={durationOptions[0]}
-                            disablePortal
-                            id="duration"
-                            renderInput={(params) => (
-                                <TextField
+                    </Box>
+                </Box>
+            </Box>
+
+            <Box sx={{ mb: "2rem" }}>
+                <InputLabel
+                    htmlFor="location"
+                    sx={{ fontSize: "small", fontWeight: "bold" }}
+                >
+                    Location
+                </InputLabel>
+                <Controller
+                    name="location"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            fullWidth
+                            margin="normal"
+                            placeholder=" Event location"
+                            required
+                            value={field.value}
+                            sx={{
+                                fontSize: "small",
+                                "& .MuiInputBase-root": {
+                                    fontSize: "small",
+                                    margin: "-1rem 0",
+                                    padding: ".1rem 0",
+                                },
+
+                                "& .MuiInputLabel-root": {
+                                    // Target the root element of the label component
+                                    fontWeight: "bold",
+                                },
+                            }}
+                            hiddenLabel
+                            size="small"
+                        />
+                    )}
+                />
+            </Box>
+
+            <Box sx={{ mb: "2rem" }}>
+                <InputLabel
+                    htmlFor="guests"
+                    sx={{ fontSize: "small", fontWeight: "bold" }}
+                >
+                    Add guests
+                </InputLabel>
+                <Controller
+                    name="guests"
+                    control={control}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            fullWidth
+                            margin="normal"
+                            placeholder="Enter Gmail addresses separated by commas"
+                            // helperText="admin@mail.com,abc@gmail.com"
+                            required
+                            value={field.value}
+                            sx={{
+                                fontSize: "small",
+                                "& .MuiInputBase-root": {
+                                    fontSize: "small",
+                                    margin: "-1rem 0",
+                                    padding: ".1rem 0",
+                                },
+
+                                "& .MuiInputLabel-root": {
+                                    // Target the root element of the label component
+                                    fontWeight: "bold",
+                                },
+                            }}
+                            hiddenLabel
+                            size="small"
+                        />
+                    )}
+                />
+            </Box>
+
+            <Box
+                sx={{
+                    display: "flex",
+                    gap: "1rem",
+                    mb: "1rem",
+                }}
+            >
+                <Box>
+                    <InputLabel
+                        htmlFor="notification"
+                        sx={{ fontSize: "small", fontWeight: "bold" }}
+                    >
+                        Notification
+                    </InputLabel>
+
+                    <Controller
+                        name="notification"
+                        control={control}
+                        defaultValue="email" // Default value can be "email" or "slack"
+                        render={({ field }) => (
+                            <RadioGroup {...field} row>
+                                <FormControlLabel
+                                    value="email"
+                                    control={<Radio size="small" />}
+                                    label="Email"
                                     sx={{
-                                        minWidth: 150,
-                                        maxWidth: 400,
+                                        "& .MuiTypography-root": {
+                                            fontSize: "small",
+                                        },
+                                        "& .MuiSvgIcon-root": {
+                                            width: "1rem",
+                                            height: "1rem",
+                                        },
+                                    }}
+                                />
+                                <FormControlLabel
+                                    value="slack"
+                                    control={<Radio size="small" />}
+                                    label="Slack"
+                                    sx={{
+                                        "& .MuiTypography-root": {
+                                            fontSize: "small",
+                                        },
+                                        "& .MuiSvgIcon-root": {
+                                            width: "1rem",
+                                            height: "1rem",
+                                        },
+                                    }}
+                                />
+                            </RadioGroup>
+                        )}
+                    />
+                </Box>
+
+                <Box sx={{ minWidth: "12rem" }}>
+                    <InputLabel
+                        htmlFor="reminder"
+                        sx={{ fontSize: "small", fontWeight: "bold" }}
+                    >
+                        Set reminder
+                    </InputLabel>
+                    <Controller
+                        name="reminder"
+                        control={control}
+                        defaultValue={30}
+                        render={({ field }) => (
+                            <Select
+                                {...field}
+                                label="Reminder"
+                                variant="outlined"
+                                fullWidth
+                                sx={{
+                                    fontSize: "small",
+                                    "& .MuiInputBase-root": {
+                                        fontSize: "small",
+                                        margin: "-1rem 0",
+                                        padding: ".1rem 0",
+                                        border: "1px solid red",
+                                    },
+
+                                    "& .MuiInputLabel-root": {
+                                        // Target the root element of the label component
+                                        fontWeight: "bold",
+                                    },
+                                    "& .MuiSelect-select": {
+                                        // Target the root element of the label component
+                                        padding: ".6rem ",
+                                    },
+                                    "& .MuiButtonBase-root .MuiMenuItem-root": {
+                                        // Target the root element of the label component
+                                        fontSize: "small",
+                                    },
+                                }}
+                            >
+                                <MenuItem
+                                    sx={{
                                         fontSize: "small",
                                     }}
-                                    {...params}
-                                    // label="Select Duration"
-                                    size="small"
-                                />
-                            )}
-                           
-                            // hiddenLabel
-                            size="small"
-                        />{" "} */}
-                    </Box>
-                    <TextField
-                        {...register("location")}
-                        label="Location"
-                        fullWidth
-                        margin="normal"
-                        required
+                                    value={0}
+                                >
+                                    None
+                                </MenuItem>
+                                <MenuItem
+                                    value={5}
+                                    sx={{
+                                        fontSize: "small",
+                                    }}
+                                >
+                                    5 minutes before
+                                </MenuItem>
+                                <MenuItem
+                                    value={15}
+                                    sx={{
+                                        fontSize: "small",
+                                    }}
+                                >
+                                    15 minutes before
+                                </MenuItem>
+                                <MenuItem
+                                    value={30}
+                                    sx={{
+                                        fontSize: "small",
+                                    }}
+                                >
+                                    30 minutes before
+                                </MenuItem>
+                                <MenuItem
+                                    value={60}
+                                    sx={{
+                                        fontSize: "small",
+                                    }}
+                                >
+                                    1 hour before
+                                </MenuItem>
+                                <MenuItem
+                                    value={1440}
+                                    sx={{
+                                        fontSize: "small",
+                                    }}
+                                >
+                                    1 day before
+                                </MenuItem>
+                            </Select>
+                        )}
                     />
                 </Box>
             </Box>
 
-            <TextField
-                {...register("guests")}
-                label="Guests (with email)"
-                fullWidth
-                margin="normal"
-                required
-            />
-            <FormControl fullWidth margin="normal" required>
-                <InputLabel>Status</InputLabel>
-                <Select {...register("status")}>
-                    <MenuItem value="pending">Pending</MenuItem>
-                    <MenuItem value="confirmed">Confirmed</MenuItem>
-                    <MenuItem value="cancelled">Cancelled</MenuItem>
-                </Select>
-            </FormControl>
-            <FormControlLabel
-                control={<Checkbox {...register("notificationByEmail")} />}
-                label="Notification by Email"
-            />
-            <FormControlLabel
-                control={<Checkbox {...register("notificationBySlack")} />}
-                label="Notification by Slack"
-            />
-            <FormControlLabel
-                control={<Checkbox {...register("setReminder")} />}
-                label="Set Reminder"
-            />
-            <TextField
-                {...register("attachment")}
-                type="file"
-                label="Upload Attachment"
-                fullWidth
-                margin="normal"
-                required
-            />
-            <Button type="submit" variant="contained" color="primary">
-                Submit
-            </Button>
+            <Box sx={{ minWidth: "12rem" }}>
+                <InputLabel
+                    htmlFor="attachment"
+                    sx={{ fontSize: "small", fontWeight: "bold" }}
+                >
+                    Upload attachment
+                </InputLabel>
+
+                <Controller
+                    name="attachment"
+                    control={control}
+                    render={({ field }) => (
+                        <Box sx={{ border: "" }}>
+                            <input
+                                type="file"
+                                accept=".txt,.pdf,.pptx"
+                                onChange={(e) => {
+                                    const file =
+                                        e.target.files && e.target.files[0];
+                                    if (file) {
+                                        field.onChange(file);
+                                    }
+                                }}
+                            />
+                        </Box>
+                    )}
+                />
+            </Box>
         </form>
     );
-}
+});
 
 export default EventForm;
