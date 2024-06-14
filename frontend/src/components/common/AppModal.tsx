@@ -9,6 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import AppButton from "./AppButton";
 
 interface IAppModal {
     open: boolean;
@@ -16,6 +17,7 @@ interface IAppModal {
     title: string;
     onSave?: () => void;
     children: ReactNode;
+    saveTitle?: string;
 }
 
 const AppModal: React.FC<IAppModal> = ({
@@ -24,6 +26,7 @@ const AppModal: React.FC<IAppModal> = ({
     title,
     onSave,
     children,
+    saveTitle,
 }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -38,14 +41,22 @@ const AppModal: React.FC<IAppModal> = ({
                 </IconButton>
             </DialogTitle>
             <DialogContent dividers>{children}</DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="primary">
-                    Close
-                </Button>
+            <DialogActions sx={{ padding: "1rem 2.5rem " }}>
+                <AppButton
+                    title="Cancel"
+                    onClick={onClose}
+                    sx={{ color: "black" }}
+                    size="small"
+                    variant="text"
+                />
                 {onSave && (
-                    <Button onClick={onSave} color="primary">
-                        Save
-                    </Button>
+                    <AppButton
+                        title={saveTitle ? saveTitle : "Submit"}
+                        onClick={onSave}
+                        color="primary"
+                        size="small"
+                        variant="contained"
+                    />
                 )}
             </DialogActions>
         </Dialog>
