@@ -9,6 +9,8 @@ import {
     Autocomplete,
     RadioGroup,
     Radio,
+    IconButton,
+    Typography,
 } from "@mui/material";
 import {
     DatePicker,
@@ -16,22 +18,15 @@ import {
     TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
-import { forwardRef, useEffect, useImperativeHandle } from "react";
+import dayjs from "dayjs";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+    IEventFormProps,
+    IEventFormRef,
+    IFormValues,
+} from "../interfaces/IEventForm";
 
-type status = "upcoming" | "completed" | "ongoing";
-interface IFormValues {
-    datetime: Dayjs;
-    duration: { label: string; value: number };
-    eventName: string;
-    location: string;
-    agenda?: string;
-    guests: string[] | string;
-    status: status;
-    reminder: number;
-    notification: string;
-    attachment?: File | string | string[];
-}
 const durationOptions = [
     { label: "30min", value: 1800 },
     { label: "1h", value: 3600 },
@@ -41,14 +36,6 @@ const durationOptions = [
     { label: "4h", value: 14400 },
 ];
 
-interface IEventFormProps {
-    onSubmit: (data: IFormValues) => void;
-    setReset: (reset: () => void) => void;
-}
-
-export interface IEventFormRef {
-    submit: () => void;
-}
 const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
     const { register, handleSubmit, control, reset } = useForm<IFormValues>({
         defaultValues: {
@@ -56,11 +43,15 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
             duration: durationOptions[0],
         },
     });
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useImperativeHandle(ref, () => ({
         submit: () => handleSubmit(props.onSubmit)(),
     }));
 
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+    };
     useEffect(() => {
         props.setReset(() => reset);
     }, [reset]);
@@ -393,7 +384,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                 sx={{
                     display: "flex",
                     gap: "1rem",
-                    mb: "1rem",
+                    mb: "1.5rem",
                 }}
             >
                 <Box>
@@ -551,19 +542,53 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     name="attachment"
                     control={control}
                     rules={{ required: "Attachment is required" }}
-                    render={({ field }) => (
+                    render={() => (
                         <Box sx={{ border: "" }}>
-                            <input
-                                type="file"
-                                accept=".txt,.pdf,.pptx"
-                                onChange={(e) => {
-                                    const file =
-                                        e.target.files && e.target.files[0];
-                                    if (file) {
-                                        field.onChange(file);
-                                    }
-                                }}
-                            />
+                            {selectedFile && (
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    <Typography fontSize="small">
+                                        {selectedFile.name} (
+                                        {(
+                                            selectedFile.size /
+                                            (1024 * 1024)
+                                        ).toFixed(2)}
+                                        MB)
+                                    </Typography>
+
+                                    <IconButton
+                                        onClick={handleRemoveFile}
+                                        size="small"
+                                        aria-label="delete"
+                                        sx={{
+                                            "& .MuiSvgIcon-root": {
+                                                width: "1rem",
+                                                height: "1rem",
+                                            },
+                                        }}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
+                            )}
+                            {!selectedFile && (
+                                <input
+                                    type="file"
+                                    accept=".txt,.pdf,.pptx"
+                                    onChange={(e) => {
+                                        const file =
+                                            e.target.files && e.target.files[0];
+                                        if (file) {
+                                            setSelectedFile(file);
+                                        }
+                                    }}
+                                />
+                            )}
                         </Box>
                     )}
                 />
