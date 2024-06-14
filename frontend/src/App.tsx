@@ -1,20 +1,18 @@
 import { Button } from "@mui/material";
 import "./App.css";
 
-import EventForm from "./components/EventForm";
+import EventForm, { IEventFormRef } from "./components/EventForm";
 import AppModal from "./components/common/AppModal";
 import { useRef, useState } from "react";
 
 function App() {
     const [open, setOpen] = useState(false);
-    const formRef = useRef(null);
+    const [resetForm, setResetForm] = useState<() => void>(() => {});
+    const formRef = useRef<IEventFormRef>(null);
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
+    // console.log({ resetForm });
+    const handleModal = () => {
+        setOpen(!open);
     };
 
     const handleSave = () => {
@@ -26,7 +24,11 @@ function App() {
     const onSubmit = (data) => {
         // Handle form submission
         console.log(data);
-        setOpen(false);
+        // console.log({ resetForm });
+
+        //After successful submission
+        resetForm();
+        // setOpen(false);
     };
 
     // const onSubmit = (data: any) => {
@@ -40,14 +42,22 @@ function App() {
     return (
         <div>
             <h1>Create Event</h1>
-            <Button onClick={handleOpen}>Open Modal</Button>
+            <Button onClick={handleModal}>Open Modal</Button>
 
             <AppModal
                 open={open}
-                onClose={handleClose}
+                onClose={() => setOpen(false)}
                 title="Create Event"
                 onSave={handleSave}
-                children={<EventForm ref={formRef} onSubmit={onSubmit} />}
+                saveTitle="Create"
+                children={
+                    <EventForm
+                        key={"create_event_form"}
+                        ref={formRef}
+                        onSubmit={onSubmit}
+                        setReset={setResetForm}
+                    />
+                }
             />
         </div>
     );
