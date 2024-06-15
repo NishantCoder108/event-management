@@ -49,7 +49,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
         props.setReset(() => reset);
     }, [reset]);
     return (
-        <form>
+        <form encType="multipart/form-data">
             <Box sx={{ mb: "1rem", pb: "1rem" }}>
                 <InputLabel
                     htmlFor="eventName"
