@@ -12,7 +12,7 @@ export interface IFormValues {
     status: status;
     reminder: number;
     notification: string;
-    attachment?: File | string | string[];
+    attachment?: File | string;
 }
 
 export interface IEventFormProps {
