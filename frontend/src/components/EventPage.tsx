@@ -24,34 +24,43 @@ function EventPage() {
 
     const onSubmit = async (data: IFormValues) => {
         try {
-            // Handle form submission
             console.log(data);
+            const formData = new FormData();
+
             // Convert datetime to milliseconds
             const datetimeInMillis = data.datetime.valueOf();
-
-            // Convert guests string to array
             const guestsArray = data.guests
                 .split(",")
                 .map((email) => email.trim());
 
-            // Prepare the data object for submission
-            const eventData = {
-                datetime: datetimeInMillis,
-                duration: data.duration.value,
-                eventName: data.eventName,
-                agenda: data.agenda,
-                location: data.location,
-                guests: guestsArray,
-                notification: data.notification,
-                reminder: data.reminder,
-                attachment: data.attachment,
-            };
+            // // Prepare the data object for submission
+            // const eventData = {
+            //     datetime: datetimeInMillis,
+            //     duration: data.duration.value,
+            //     eventName: data.eventName,
+            //     agenda: data.agenda,
+            //     location: data.location,
+            //     guests: guestsArray,
+            //     notification: data.notification,
+            //     reminder: data.reminder,
+            //     attachment: data.attachment,
+            // };
 
-            console.log({ eventData });
+            formData.append("datetime", JSON.stringify(datetimeInMillis));
+            formData.append("duration", JSON.stringify(data.duration.value));
+            formData.append("eventName", data.eventName);
+            formData.append("agenda", data.agenda || "");
+            formData.append("location", data.location);
+            formData.append("notification", data.notification);
+            formData.append("reminder", JSON.stringify(data.reminder));
+            formData.append("attachment", data.attachment || "");
+            guestsArray.forEach((guest, index) => {
+                formData.append(`guests[${index}]`, guest);
+            });
 
             const response = await axios.post(
-                "https://backend-api.com/events",
-                eventData
+                "http://localhost:3000/api/events",
+                formData
             );
             console.log("Post request successful:", response.data);
             //After successful submission
