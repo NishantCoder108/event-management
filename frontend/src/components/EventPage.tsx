@@ -1,13 +1,14 @@
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 import { useRef, useState } from "react";
 import AppModal from "./common/AppModal";
 import EventForm from "./EventForm";
 import { IEventFormRef, IFormValues } from "../interfaces/IEventForm";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import EventTable from "./EventTable";
+import { Bounce, toast } from "react-toastify";
 
-function EventPage() {
+const EventPage = () => {
     const [open, setOpen] = useState(false);
     const [resetForm, setResetForm] = useState<() => void>(() => {});
     const formRef = useRef<IEventFormRef>(null);
@@ -26,26 +27,12 @@ function EventPage() {
     const onSubmit = async (data: IFormValues) => {
         try {
             console.log(data);
-            const formData = new FormData();
 
-            // Convert datetime to milliseconds
+            const formData = new FormData();
             const datetimeInMillis = data.datetime.valueOf();
             const guestsArray = data.guests
                 .split(",")
                 .map((email) => email.trim());
-
-            // // Prepare the data object for submission
-            // const eventData = {
-            //     datetime: datetimeInMillis,
-            //     duration: data.duration.value,
-            //     eventName: data.eventName,
-            //     agenda: data.agenda,
-            //     location: data.location,
-            //     guests: guestsArray,
-            //     notification: data.notification,
-            //     reminder: data.reminder,
-            //     attachment: data.attachment,
-            // };
 
             formData.append("datetime", JSON.stringify(datetimeInMillis));
             formData.append("duration", JSON.stringify(data.duration.value));
@@ -64,38 +51,71 @@ function EventPage() {
                 formData
             );
             console.log("Post request successful:", response.data);
-            //After successful submission
-            // resetForm();
-            // setOpen(false);
+
+            if (response && response.data) {
+                toast.success(
+                    <Box sx={{ fontSize: "small" }}>
+                        {response.data.message}
+                    </Box>,
+                    {
+                        position: "bottom-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    }
+                );
+                resetForm();
+                setOpen(false);
+            }
         } catch (error) {
             console.log(error);
+            const err = error as AxiosError;
+
+            toast.error(<Box sx={{ fontSize: "small" }}> {err.message} </Box>, {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     };
 
     return (
         <div>
-            <Button onClick={handleModal}>Create Event</Button>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button onClick={handleModal}>Create Event</Button>
 
-            <AppModal
-                open={open}
-                onClose={() => setOpen(false)}
-                title="Create Event"
-                onSave={handleSave}
-                saveTitle="Create"
-                children={
-                    <EventForm
-                        key={"create_event_form"}
-                        ref={formRef}
-                        onSubmit={onSubmit}
-                        setReset={setResetForm}
-                    />
-                }
-            />
+                <AppModal
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    title="Create Event"
+                    onSave={handleSave}
+                    saveTitle="Create"
+                    children={
+                        <EventForm
+                            key={"create_event_form"}
+                            ref={formRef}
+                            onSubmit={onSubmit}
+                            setReset={setResetForm}
+                        />
+                    }
+                />
+            </Box>
 
             <EventTable />
         </div>
     );
-}
+};
 
 export default EventPage;
 
