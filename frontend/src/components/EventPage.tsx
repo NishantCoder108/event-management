@@ -1,10 +1,11 @@
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 
 import { useRef, useState } from "react";
 import AppModal from "./common/AppModal";
 import EventForm from "./EventForm";
 import { IEventFormRef, IFormValues } from "../interfaces/IEventForm";
 import axios from "axios";
+import EventTable from "./EventTable";
 
 function EventPage() {
     const [open, setOpen] = useState(false);
@@ -73,7 +74,6 @@ function EventPage() {
 
     return (
         <div>
-            <Typography>Event Details Page</Typography>
             <Button onClick={handleModal}>Create Event</Button>
 
             <AppModal
@@ -91,6 +91,8 @@ function EventPage() {
                     />
                 }
             />
+
+            <EventTable />
         </div>
     );
 }
