@@ -81,9 +81,18 @@ export const createEvent = async (req: EventRequest, res: Response) => {
 
 export const getEvents = async (req: Request, res: Response) => {
     try {
-        const query = "SELECT * FROM events";
+        const duration = req.query.duration || null;
+        const lessthan = req.query.lessthan === "true";
 
-        const [events] = await pool.execute(query);
+        let query = "SELECT * FROM events";
+
+        if (duration && lessthan) {
+            query += " WHERE duration <= ?";
+        } else if (duration) {
+            query += " WHERE duration = ?";
+        }
+
+        const [events] = await pool.execute(query, [duration]);
 
         res.status(200).json(events);
     } catch (error) {
@@ -95,3 +104,12 @@ export const getEvents = async (req: Request, res: Response) => {
         });
     }
 };
+
+// 30 minutes = 30 * 60 * 1000 = 1800000 milliseconds
+// 1 hour = 60 * 60 * 1000 = 3600000 milliseconds
+// 1.5 hours = 1.5 * 60 * 60 * 1000 = 5400000 milliseconds
+// 2 hours = 2 * 60 * 60 * 1000 = 7200000 milliseconds
+// 2.5 hours = 2.5 * 60 * 60 * 1000 = 9000000 milliseconds
+// 3 hours = 3 * 60 * 60 * 1000 = 10800000 milliseconds
+// 4 hours = 4 * 60 * 60 * 1000 = 14400000 milliseconds
+// 5 hours = 5 * 60 * 60 * 1000 = 18000000 milliseconds
