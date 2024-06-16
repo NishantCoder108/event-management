@@ -78,3 +78,20 @@ export const createEvent = async (req: EventRequest, res: Response) => {
         res.status(500).send({ message: "Error creating event", error: error });
     }
 };
+
+export const getEvents = async (req: Request, res: Response) => {
+    try {
+        const query = "SELECT * FROM events";
+
+        const [events] = await pool.execute(query);
+
+        res.status(200).json(events);
+    } catch (error) {
+        console.log("Error fetching events", error);
+
+        res.status(500).json({
+            error: error,
+            message: "Failed to fetch events",
+        });
+    }
+};
