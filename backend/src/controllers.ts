@@ -81,18 +81,42 @@ export const createEvent = async (req: EventRequest, res: Response) => {
 
 export const getEvents = async (req: Request, res: Response) => {
     try {
-        const duration = req.query.duration || null;
-        const lessthan = req.query.lessthan === "true";
+        const { duration, lessthan, status } = req.query;
 
         let query = "SELECT * FROM events";
+        const queryParams: any[] = [];
+        const conditions: string[] = [];
 
-        if (duration && lessthan) {
-            query += " WHERE duration <= ?";
-        } else if (duration) {
-            query += " WHERE duration = ?";
+        if (duration) {
+            if (lessthan === "true") {
+                conditions.push("duration <= ?");
+            } else {
+                conditions.push("duration = ?");
+            }
+            queryParams.push(Number(duration));
         }
 
-        const [events] = await pool.execute(query, [duration]);
+        if (status) {
+            const now = new Date().toISOString().slice(0, 19).replace("T", " "); // Get current time in SQL format
+            if (status === "completed") {
+                conditions.push("datetime < ?");
+                queryParams.push(now);
+            } else if (status === "ongoing") {
+                conditions.push(
+                    "datetime <= ? AND datetime + INTERVAL duration / 1000 SECOND > ?"
+                );
+                queryParams.push(now, now);
+            } else if (status === "upcoming") {
+                conditions.push("datetime > ?");
+                queryParams.push(now);
+            }
+        }
+
+        if (conditions.length > 0) {
+            query += " WHERE " + conditions.join(" AND ");
+        }
+
+        const [events] = await pool.execute(query, queryParams);
 
         res.status(200).json(events);
     } catch (error) {
