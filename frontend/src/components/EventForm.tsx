@@ -55,7 +55,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     htmlFor="eventName"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
                 >
-                    Event Name
+                    Event Name*
                 </InputLabel>
 
                 <TextField
@@ -88,7 +88,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     htmlFor="agenda"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
                 >
-                    Agenda
+                    Agenda*
                 </InputLabel>
 
                 <TextField
@@ -131,7 +131,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                         htmlFor="Date"
                         sx={{ fontSize: "small", fontWeight: "bold" }}
                     >
-                        Date
+                        Date*
                     </InputLabel>
                     <Controller
                         name="datetime"
@@ -181,7 +181,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                         htmlFor="time"
                         sx={{ fontSize: "small", fontWeight: "bold" }}
                     >
-                        Time
+                        Time*
                     </InputLabel>
                     <Controller
                         name="datetime"
@@ -235,7 +235,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                         htmlFor="duration"
                         sx={{ fontSize: "small", fontWeight: "bold" }}
                     >
-                        Duration
+                        Duration*
                     </InputLabel>
                     <Box>
                         <Controller
@@ -300,7 +300,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     htmlFor="location"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
                 >
-                    Location
+                    Location*
                 </InputLabel>
                 <Controller
                     name="location"
@@ -338,7 +338,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     htmlFor="guests"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
                 >
-                    Add guests
+                    Add guests*
                 </InputLabel>
                 <Controller
                     name="guests"
@@ -385,7 +385,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                         htmlFor="notification"
                         sx={{ fontSize: "small", fontWeight: "bold" }}
                     >
-                        Notification
+                        Notification*
                     </InputLabel>
 
                     <Controller
@@ -433,18 +433,18 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                         htmlFor="reminder"
                         sx={{ fontSize: "small", fontWeight: "bold" }}
                     >
-                        Set reminder
+                        Set reminder*
                     </InputLabel>
                     <Controller
                         name="reminder"
                         control={control}
-                        defaultValue={30}
                         rules={{ required: "Reminder is required" }}
                         render={({ field }) => (
                             <Select
                                 {...field}
                                 label="Reminder"
                                 variant="outlined"
+                                defaultValue={300000}
                                 fullWidth
                                 sx={{
                                     fontSize: "small",
@@ -528,7 +528,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                     htmlFor="attachment"
                     sx={{ fontSize: "small", fontWeight: "bold" }}
                 >
-                    Upload attachment
+                    Upload attachment*
                 </InputLabel>
 
                 <Controller
