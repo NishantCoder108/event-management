@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { createEvent } from "./controllers";
-import { getEvents } from "./controllers";
+import { createEvent } from "./controllers/eventControllers";
+import { getEvents } from "./controllers/eventControllers";
+import { uploadFile } from "./controllers/uploadController";
 
 export const eventRoutes = Router();
 
-eventRoutes.post("/", createEvent);
+eventRoutes.post("/", uploadFile, createEvent);
 eventRoutes.get("/", getEvents);

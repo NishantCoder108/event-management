@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import pool from "./config/db";
-import { createEventTableQuery } from "./utils/eventTalbeQuery";
-import { checkAndCreateTable } from "./utils/tableUtils";
+import pool from "../config/db";
+import { createEventTableQuery } from "../utils/eventTalbeQuery";
+import { checkAndCreateTable } from "../utils/tableUtils";
 
 interface EventRequest extends Request {
     body: {
@@ -13,18 +13,13 @@ interface EventRequest extends Request {
         guests: string[];
         reminder: string;
         notification: string;
-        attachment: string | File;
+        attachment?: string | File;
     };
 }
 
 export const createEvent = async (req: EventRequest, res: Response) => {
     try {
         const eventData = req.body;
-        const eventFile = req.file;
-
-        if (eventFile) {
-            eventData.attachment = eventFile.path;
-        }
 
         const {
             eventName,
