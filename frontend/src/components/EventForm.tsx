@@ -49,7 +49,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
         props.setReset(() => reset);
     }, [reset]);
     return (
-        <form encType="multipart/form-data">
+        <form>
             <Box sx={{ mb: "1rem", pb: "1rem" }}>
                 <InputLabel
                     htmlFor="eventName"
@@ -259,7 +259,7 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                     )}
                                     id="duration"
                                     defaultValue={durationOptions[0]}
-                                    onChange={(event, value) =>
+                                    onChange={(_, value) =>
                                         field.onChange(value)
                                     }
                                     value={field.value}
@@ -444,7 +444,6 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                 {...field}
                                 label="Reminder"
                                 variant="outlined"
-                                defaultValue={300000}
                                 fullWidth
                                 sx={{
                                     fontSize: "small",
