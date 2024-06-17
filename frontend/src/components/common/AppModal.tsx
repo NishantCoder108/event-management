@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, memo } from "react";
 import {
     Dialog,
     DialogActions,
@@ -17,49 +17,46 @@ interface IAppModal {
     onSave?: () => void;
     children: ReactNode;
     saveTitle?: string;
+    isLoading?: boolean;
 }
 
-const AppModal: React.FC<IAppModal> = ({
-    open,
-    onClose,
-    title,
-    onSave,
-    children,
-    saveTitle,
-}) => {
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>
-                <Typography variant="h6">{title}</Typography>
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    sx={{ position: "absolute", right: 8, top: 8 }}
-                >
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>{children}</DialogContent>
-            <DialogActions sx={{ padding: "1rem 2.5rem " }}>
-                <AppButton
-                    title="Cancel"
-                    onClick={onClose}
-                    sx={{ color: "black" }}
-                    size="small"
-                    variant="text"
-                />
-                {onSave && (
+const AppModal: React.FC<IAppModal> = memo(
+    ({ open, onClose, title, onSave, children, saveTitle, isLoading }) => {
+        return (
+            <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+                <DialogTitle>
+                    <Typography variant="h6">{title}</Typography>
+                    <IconButton
+                        aria-label="close"
+                        onClick={onClose}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>{children}</DialogContent>
+                <DialogActions sx={{ padding: "1rem 2.5rem " }}>
                     <AppButton
-                        title={saveTitle ? saveTitle : "Submit"}
-                        onClick={onSave}
-                        color="primary"
+                        title="Cancel"
+                        onClick={onClose}
+                        sx={{ color: "black" }}
                         size="small"
-                        variant="contained"
+                        variant="text"
                     />
-                )}
-            </DialogActions>
-        </Dialog>
-    );
-};
+                    {onSave && (
+                        <AppButton
+                            title={saveTitle ? saveTitle : "Submit"}
+                            onClick={onSave}
+                            color="primary"
+                            size="small"
+                            variant="contained"
+                            isLoading={isLoading}
+                        />
+                    )}
+                </DialogActions>
+            </Dialog>
+        );
+    }
+);
 
 export default AppModal;
