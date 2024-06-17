@@ -13,6 +13,7 @@ const EventPage = () => {
     const [open, setOpen] = useState(false);
     const [refreshData, setRefreshData] = useState(false);
     const [resetForm, setResetForm] = useState<() => void>(() => {});
+    const [isLoading, setIsLoading] = useState(false);
     const formRef = useRef<IEventFormRef>(null);
 
     const handleModal = () => {
@@ -26,6 +27,7 @@ const EventPage = () => {
     };
 
     const onSubmit = async (data: IFormValues) => {
+        setIsLoading(true);
         try {
             console.log(data);
 
@@ -69,6 +71,7 @@ const EventPage = () => {
                 );
                 resetForm();
                 setOpen(false);
+                setIsLoading(false);
             }
             setRefreshData(!refreshData);
         } catch (error) {
@@ -86,6 +89,7 @@ const EventPage = () => {
                 theme: "light",
                 transition: Bounce,
             });
+            setIsLoading(false);
         }
     };
 
@@ -99,6 +103,7 @@ const EventPage = () => {
                     onClose={() => setOpen(false)}
                     title="Create Event"
                     onSave={handleSave}
+                    isLoading={isLoading}
                     saveTitle="Create"
                     children={
                         <EventForm

@@ -31,16 +31,33 @@ const AppButton = ({
 }: IAppButton) => {
     return (
         <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            {isLoading && <CircularProgress />}
             <Button
-                sx={sx}
                 onClick={onClick}
                 disabled={isLoading ? true : false}
                 color={color}
                 size={size}
                 variant={variant}
+                sx={{
+                    maxWidth: "7rem",
+                    maxHeight: "2rem",
+                    ...sx,
+                }}
             >
-                {title}
+                {isLoading ? (
+                    <Box
+                        sx={{
+                            padding: "4px 1px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            minWidth: "4rem",
+                        }}
+                    >
+                        <CircularProgress size="1rem" thickness={5} />
+                    </Box>
+                ) : (
+                    title
+                )}
             </Button>
         </Box>
     );
