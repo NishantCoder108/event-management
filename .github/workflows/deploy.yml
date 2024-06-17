@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "22.3.0"
+
+            - name: Install backend dependencies
+              run: npm install
+              working-directory: ./backend
+
+            - name: Install frontend dependencies
+              run: npm install
+              working-directory: ./frontend
+
+            - name: Build frontend
+              run: npm run build
+              working-directory: ./frontend
+
+            - name: Move frontend build to backend
+              run: |
+                  rm -rf ./backend/public
+                  mkdir ./backend/public
+                  mv ./frontend/dist/* ./backend/public/
+
+            - name: Build backend
+              run: npm run build
+              working-directory: ./backend
+
+            - name: Deploy to EC2
+              env:
+                  HOST: ${{ secrets.HOST }}
+                  USER: ${{ secrets.USER }}
+                  KEY: ${{ secrets.KEY }}
+                  PROJECT_DIR: ${{ secrets.PROJECT_DIR }}
+              run: |
+                  echo "$KEY" > key.pem
+                  chmod 400 key.pem
+                  scp -o StrictHostKeyChecking=no -i key.pem -r ./* $USER@$HOST:$PROJECT_DIR
+                  ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
+                    cd $PROJECT_DIR/backend
+                    npm install --production
+                    npm run build
+                    pm2 restart ecosystem.config.js --env production
+                    exit
+                  EOF
