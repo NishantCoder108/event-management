@@ -1,22 +1,19 @@
 export const formatTime = (milliseconds: number) => {
-    const seconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-
-    const remainingMinutes = minutes % 60;
-    const remainingSeconds = seconds % 60;
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    const remainingSeconds = totalSeconds % 60;
 
     if (hours > 0) {
-        const hrTime = `${hours}h`;
-
-        const timeLeft = remainingMinutes === 0 ? "" : remainingMinutes + "min";
-        return hrTime + timeLeft;
-    } else if (minutes > 0) {
-        const miTime = `${minutes}h`;
-
-        const timeLeft = remainingSeconds === 0 ? "" : remainingSeconds + "sec";
-        return miTime + timeLeft;
+        return remainingMinutes > 0
+            ? `${hours}h ${remainingMinutes}min`
+            : `${hours}h`;
+    } else if (totalMinutes > 0) {
+        return remainingSeconds > 0
+            ? `${totalMinutes}min ${remainingSeconds}sec`
+            : `${totalMinutes}min`;
     } else {
-        return `${seconds}sec`;
+        return `${totalSeconds}sec`;
     }
 };
