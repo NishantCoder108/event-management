@@ -4,9 +4,10 @@ import { useRef, useState } from "react";
 import AppModal from "./common/AppModal";
 import EventForm from "./EventForm";
 import { IEventFormRef, IFormValues } from "../interfaces/IEventForm";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import EventTable from "./EventTable";
 import { Bounce, toast } from "react-toastify";
+import axiosInstance from "../api/axiosInstance";
 
 const EventPage = () => {
     const [open, setOpen] = useState(false);
@@ -46,10 +47,7 @@ const EventPage = () => {
                 formData.append(`guests[${index}]`, guest);
             });
 
-            const response = await axios.post(
-                "http://localhost:3000/api/events",
-                formData
-            );
+            const response = await axiosInstance.post("/events", formData);
             console.log("Post request successful:", response.data);
 
             if (response && response.data) {

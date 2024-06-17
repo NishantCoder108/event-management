@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
     Table,
     TableBody,
@@ -18,6 +17,7 @@ import {
     Typography,
 } from "@mui/material";
 import { format } from "date-fns";
+import axiosInstance from "../api/axiosInstance";
 
 interface Event {
     id: number;
@@ -39,15 +39,12 @@ const EventTable: React.FC = () => {
 
     const fetchEvents = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:3000/api/events",
-                {
-                    params: {
-                        status: status || undefined,
-                        duration: duration || undefined,
-                    },
-                }
-            );
+            const response = await axiosInstance.get("/events", {
+                params: {
+                    status: status || undefined,
+                    duration: duration || undefined,
+                },
+            });
             setEvents(response.data);
         } catch (error) {
             console.error("Error fetching events:", error);
