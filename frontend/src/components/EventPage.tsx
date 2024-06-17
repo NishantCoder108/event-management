@@ -11,10 +11,10 @@ import axiosInstance from "../api/axiosInstance";
 
 const EventPage = () => {
     const [open, setOpen] = useState(false);
+    const [refreshData, setRefreshData] = useState(false);
     const [resetForm, setResetForm] = useState<() => void>(() => {});
     const formRef = useRef<IEventFormRef>(null);
 
-    // console.log({ resetForm });
     const handleModal = () => {
         setOpen(!open);
     };
@@ -70,6 +70,7 @@ const EventPage = () => {
                 resetForm();
                 setOpen(false);
             }
+            setRefreshData(!refreshData);
         } catch (error) {
             console.log(error);
             const err = error as AxiosError;
@@ -110,7 +111,7 @@ const EventPage = () => {
                 />
             </Box>
 
-            <EventTable />
+            <EventTable refreshData={refreshData} />
         </div>
     );
 };

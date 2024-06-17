@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -31,8 +31,10 @@ interface Event {
     notification: string;
     attachment: string;
 }
-
-const EventTable: React.FC = () => {
+interface EventTableProps {
+    refreshData: boolean;
+}
+const EventTable = memo(({ refreshData }: EventTableProps) => {
     const [events, setEvents] = useState<Event[]>([]);
     const [status, setStatus] = useState<string>("");
     const [duration, setDuration] = useState<string>("");
@@ -53,7 +55,7 @@ const EventTable: React.FC = () => {
 
     useEffect(() => {
         fetchEvents();
-    }, [status, duration]);
+    }, [status, duration, refreshData]);
 
     return (
         <Box sx={{ padding: 2 }}>
@@ -165,6 +167,6 @@ const EventTable: React.FC = () => {
             </TableContainer>
         </Box>
     );
-};
+});
 
 export default EventTable;
