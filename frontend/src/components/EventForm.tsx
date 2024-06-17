@@ -25,12 +25,13 @@ import {
 } from "../interfaces/IEventForm";
 
 const durationOptions = [
-    { label: "30min", value: 1800 * 60000 },
-    { label: "1h", value: 3600 * 60000 },
-    { label: "1h 30m", value: 5400 * 60000 },
-    { label: "2h", value: 7200 * 60000 },
-    { label: "3h", value: 10800 * 60000 },
-    { label: "4h", value: 14400 * 60000 },
+    { label: "30min", value: 1800000 },
+    { label: "1h", value: 3600000 },
+    { label: "1h 30min", value: 5400000 },
+    { label: "2h", value: 7200000 },
+    { label: "3h", value: 10800000 },
+    { label: "4h", value: 14400000 },
+    { label: "5h", value: 18000000 },
 ];
 
 const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
