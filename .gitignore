@@ -2,3 +2,6 @@ node_modules
 uploads
 .env
 dist
+public
+veris_instance_keypair.pem
+models.ts

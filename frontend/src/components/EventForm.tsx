@@ -9,6 +9,8 @@ import {
     Autocomplete,
     RadioGroup,
     Radio,
+    styled,
+    Popper,
 } from "@mui/material";
 import {
     DatePicker,
@@ -23,6 +25,12 @@ import {
     IEventFormRef,
     IFormValues,
 } from "../interfaces/IEventForm";
+
+const StyledPopper = styled(Popper)({
+    "& .MuiAutocomplete-option": {
+        fontSize: "0.875rem",
+    },
+});
 
 const durationOptions = [
     { label: "30min", value: 1800000 },
@@ -251,7 +259,9 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                             sx={{
                                                 minWidth: 150,
                                                 maxWidth: 400,
-                                                fontSize: "small",
+                                                "& .MuiInputBase-input": {
+                                                    fontSize: "0.875rem",
+                                                },
                                             }}
                                             {...params}
                                             // label="Select Duration"
@@ -264,31 +274,31 @@ const EventForm = forwardRef<IEventFormRef, IEventFormProps>((props, ref) => {
                                         field.onChange(value)
                                     }
                                     value={field.value}
+                                    PopperComponent={StyledPopper}
                                     sx={{
-                                        fontSize: "small",
                                         "& .MuiInputBase-root": {
-                                            // Target the root element of the input component
-                                            fontSize: "small",
-
-                                            // padding: "0 1rem 0",
+                                            fontSize: "0.875rem",
                                         },
-                                        "& .MuiInputLabel-root": {
-                                            fontWeight: "bold",
+                                        "& .MuiAutocomplete-option": {
+                                            fontSize: "0.875rem",
                                         },
                                         "& .MuiInputBase-input": {
                                             padding: ".3rem 0 !important",
+                                            fontSize: "0.875rem",
+                                        },
+                                        "& .MuiSvgIcon-root": {
+                                            fontSize: "large",
                                         },
                                         "& .MuiAutocomplete-popper": {
-                                            border: "5px solid red !important",
-                                        },
-                                        "& .base-Popper-root": {
-                                            border: "1px solid red",
-                                            backgroundColor: "red",
-                                        },
-                                        "& .MuiAutocomplete-option": {
+                                            "& .MuiAutocomplete-option": {
+                                                fontSize: "small",
+                                                border: "1px solid red",
+                                            },
                                             fontSize: "small",
+                                            border: "1px solid red",
                                         },
                                     }}
+                                    size="small"
                                 />
                             )}
                         />

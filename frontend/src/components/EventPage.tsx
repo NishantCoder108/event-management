@@ -96,7 +96,15 @@ const EventPage = () => {
     return (
         <div>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button onClick={handleModal}>Create Event</Button>
+                <Button
+                    onClick={handleModal}
+                    sx={{
+                        fontSize: "smaller",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Create Event
+                </Button>
 
                 <AppModal
                     open={open}
@@ -122,18 +130,3 @@ const EventPage = () => {
 };
 
 export default EventPage;
-
-// const l = {
-//     datetime: "2024-06-14T20:07:34.062Z",
-//     duration: {
-//         label: "30min",
-//         value: 1800,
-//     },
-//     eventName: "ssss",
-//     agenda: "sss",
-//     location: "ssss",
-//     guests: "www@gmail.com,kdfjc@gmail.com",
-//     notification: "email",
-//     reminder: 30,
-//     attachment: {},
-// };
