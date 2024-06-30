@@ -30,6 +30,7 @@ jobs:
                   # Replace the following with your deployment script or commands
                   ssh ubuntu@$CICD_IP_ADD << EOF
                   cd /home/ubuntu/veris_ins
+                  git pull origin main
                   chmod +x deploy.sh
                   ./deploy.sh
                   EOF
